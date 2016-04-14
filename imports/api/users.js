@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 
+import CategoryTree from '../CategoryTree.js';
+
 const Users = new Mongo.Collection('usersMain');
 
 Meteor.methods({
@@ -9,7 +11,8 @@ Meteor.methods({
         Users.insert({
             _id: userId,
             role: settings.role ? settings.role : 'user',
-            overallTime: 0
+            overallTime: 0,
+            categoryTree: new CategoryTree()
         });
     },
 
@@ -49,6 +52,15 @@ Meteor.methods({
         let info = Meteor.call('users.api.getInfo', userId);
 
         return info.overallTime;
+    },
+
+    'users.api.addCategory'(userId, category){
+        let user = Users.findOne({ _id: userId });
+
+        let categoryTree = user.categoryTree;
+        categoryTree.addCategory(category);
+
+        Users.update({ _id: userId }, { $set: { categoryTree: categoryTree } });
     }
 });
 

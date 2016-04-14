@@ -6,5 +6,9 @@ export function throwAccessDenied(){
 }
 
 export function throwNoParentCategory(category){
-    throw new Meteor.Error("No such parent category " + category);
+    throw new Meteor.Error(`No such parent category ${category}`);
+}
+
+export function throwCategoryExists(category){
+	throw new Meteor.Error(`Category ${category} already exists`);
 }
