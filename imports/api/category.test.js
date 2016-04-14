@@ -3,34 +3,42 @@ import { Random } from 'meteor/random';
 
 import { assert } from 'meteor/practicalmeteor:chai';
 
-import { Tasks } from './tasks.js';
+import { Categories } from './category.js';
+
+import { getAdminUser } from '../utils/testing.js';
 
 if(Meteor.isServer){
-    describe('Tasks', ()=>{
+
+    describe('Categories', ()=>{
+
         describe('methods', ()=>{
 
             const userId = Random.id();
-            let taskId;
+            let categoryId;
 
             beforeEach(() => {
-                Tasks.remove({});
+                Categories.remove({});
 
-                taskId = Tasks.insert({
-                    text: 'test task',
-                    createdAt: new Date(),
-                    owner: userId,
-                    username: 'missingdays'
+                categoryId = Categories.insert({
+                    _id: "Test category"
                 });
             });
 
-            it('can delete owned task', ()=>{
-                const deleteTask = Meteor.server.method_handlers['tasks.remove'];
+            it('can find category', ()=>{
+                let cat = Categories.findOne({ _id: categoryId });
 
-                const invocation = { userId };
+                assert.notEqual(cat, undefined);
+            });
 
-                deleteTask.apply(invocation, [taskId]);
+            it('can add new category', ()=>{
+                const categoriesAdd = Meteor.server.method_handlers['categories.add'];
+                const inv = getAdminUser();
 
-                assert.equal(Tasks.find().count(), 0);
+                categoriesAdd.apply(inv, [{ _id: 'New cat' }]);
+
+                let cat = Categories.findOne({ _id: "New cat"  });
+
+                assert.equal(cat._id, "New cat");
             });
         });
     });

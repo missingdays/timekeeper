@@ -5,8 +5,8 @@ import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 
 import AccountsUIWrapper from './AccountsUIWrapper';
-import NavBar from './navbar';
-import Main from './main';
+import NavBar from './Navbar';
+import Main from './Main';
 
 class App extends Component {
 

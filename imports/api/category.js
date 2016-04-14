@@ -2,68 +2,56 @@ import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { check } from 'meteor/check';
 
+import { throwAccessDenied, throwNoParentCategory } from '../utils/errors.js';
+
 export const Categories = new Mongo.Collection('categories');
 
 if(Meteor.isServer){
-    Meteor.publish('tasks', function taskPublication(){
-        return Tasks.find({
-            $or: [
-                { private: { $ne: true} },
-                { owner: this.userId }
-            ]
-        });
+    Meteor.publish('categories', function catsPublication(){
+       return Categories.find({}).fetch();
     });
 }
 
 Meteor.methods({
-    'categories.add'(text){
-        check(text, String);
+    'categories.add'(category){
+        check(category, Object);
+        
+        let user = this.userId;
 
-        if(!Meteor.userId()){
-            throw new Meteor.Error('not-authorized');
+        Meteor.call("users.throwIfNotAdmin", user);
+
+        if(category.parent){
+            let parent = Categories.findOne({ _id: category.name });
+
+            if(!parent){
+                throwNoParentCategory(category.parent);
+            }
+
+            Categories.update(parent, { $addToSet: { children: category.name } } );
         }
 
-        Tasks.insert({
-            text,
-            createdAt: new Date(),
-            owner: Meteor.userId(),
-            username: Meteor.user().username
+        Categories.insert({
+            _id: category.name,
+            parent: category.parent,
+            children: []
         });
     },
 
-    'tasks.remove'(taskId){
-        check(taskId, String);
+    'categories.removeById'(categoryId){
+        check(categoryId, String);
 
-        const task = Tasks.findOne(taskId);
-        if(task.private && task.owner !== Meteor.userId()){
-            throw new Meteor.Error('not-authorized');
+        let user = Meteor.userId();
+
+        if(!user || !Roles.userInRole(user, ['admin'])){
+            throwAccessDenied();
         }
 
-        Tasks.remove(taskId);
+        let parent = Categories.findOne({}, { children: { $elemMatch: categoryId } } );
+
+        if(parent){
+            Categories.update(parent, { $pull: { children: categoryId } } );
+        }
+
+        Categories.remove({ _id: categoryId });
     },
-
-    'tasks.setChecked'(taskId, setChecked){
-        check(taskId, String);
-        check(setChecked, Boolean);
-
-        const task = Tasks.findOne(taskId);
-        if(task.private && task.owner !== Meteor.userId()){
-            throw new Meteor.Error('not-authorized');
-        }
-
-        Tasks.update(taskId, { $set: { checked: setChecked } } );
-    },
-
-    'tasks.setPrivate'(taskId, setToPrivate){
-        check(taskId, String);
-        check(setToPrivate, Boolean);
-
-        const task = Tasks.findOne(taskId);
-
-        if(task.owner !== Meteor.userId()){
-            throw new Meteor.Error('not-authorized');
-        }
-
-        Tasks.update(taskId, { $set: { private: setToPrivate } } );
-    }
 });
