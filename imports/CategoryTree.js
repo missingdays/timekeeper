@@ -46,10 +46,10 @@ export default class CategoryTree {
 	}
 
 	_initFromPlainObject(obj){
-		this.rootcat = new Category(obj.name);
+		this.rootcat = new Category(obj.rootcat.name);
 
-		for(let key in obj){
-			this.rootcat.addChildFromPlainObject(obj[key]);
+		for(let key in obj.rootcat.subcats){
+			this.rootcat.addChildFromPlainObject(obj.rootcat.subcats[key]);
 		}
 	}
 
