@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
-import { objectTime } from '../utils/time.js';
+import CategoryTree from '../CategoryTree.js';
+import { objectTimeS } from '../utils/time.js';
 
 export default class Category extends Component {
 
@@ -10,7 +11,18 @@ export default class Category extends Component {
 	}
 
 	render(){
-		let time = objectTime(this.state.time * 1000);
+		let name = this.props.name;
+
+		let categoryTree = this.state.categoryTree;
+
+		if(categoryTree === undefined){
+			return (
+				<ul></ul>
+			);
+		}
+
+		let category = categoryTree.findCategory(name);
+		let time = objectTimeS(category.getTime());
 
 		return (
 			<ul>
@@ -18,21 +30,21 @@ export default class Category extends Component {
 					<span className="badge">{
 						`${time.days} days, ${time.hours} hours, ${time.minutes} minutes, ${time.seconds} seconds`
 					}</span>
-					Overall time
+					
+					{ name === 'root' ? 'Overall time' : name }
 				</li>
 			</ul>
 		);
 	}
 
-	updateTime(){
+	updateCategoryTree(){
 		let self = this;
-		Meteor.call('users.getOverallTime', (err, time) => {
-			time = Math.floor(time);
-			self.setState({ time: time });
+		Meteor.call('users.getInfo', (err, info) => {
+			self.setState({ categoryTree: new CategoryTree(info.categoryTree) });
 		});
 	}
 
 	componentDidMount(){
-		this.updateTime();
+		this.updateCategoryTree();
 	}
 }

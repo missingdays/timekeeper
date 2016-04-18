@@ -74,6 +74,44 @@ if(Meteor.isServer){
 			})
 		});
 
+		describe('#increaseTime', ()=>{
+			it('should increase time', ()=>{
+				categoryTree.addCategory({
+					name: 'test'
+				});
+
+				let category = categoryTree.findCategory('test');
+
+				category.increaseTime(10);
+
+				assert.equal(category.getTime(), 10);
+			});
+
+			it('should increase time to parent', ()=>{
+				categoryTree.addCategory({
+					name: 'parent'
+				});
+
+				categoryTree.addCategory({
+					name: 'child',
+					parent: 'parent'
+				});
+
+				let category = categoryTree.findCategory('child');
+
+				category.increaseTime(10);
+
+				assert.equal(category.getTime(), 10);
+				assert.equal(categoryTree.findCategory('parent').getTime(), 10);
+				assert.equal(categoryTree.getRoot().getTime(), 10);
+
+				categoryTree.findCategory('parent').increaseTime(10);
+
+				assert.equal(categoryTree.findCategory('parent').getTime(), 20);
+				assert.equal(categoryTree.getRoot().getTime(), 20);
+			});
+		});
+
 		describe('#constructor from object', ()=>{
 			it('should init from object with no cats', ()=>{
 				categoryTree = new CategoryTree({

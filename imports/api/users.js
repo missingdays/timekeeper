@@ -7,7 +7,6 @@ const Users = new Mongo.Collection('usersMain');
 
 Meteor.methods({
     'users.api.new'(userId, settings){
-        console.log(userId);
         Users.insert({
             _id: userId,
             role: settings.role ? settings.role : 'user',
@@ -20,9 +19,9 @@ Meteor.methods({
         let user = Users.findOne({ _id: userId });
 
         return {
-            _id: user._id,
             role: user.role,
-            overallTime: user.overallTime
+            overallTime: user.overallTime,
+            categoryTree: user.categoryTree
         };
     },
 
@@ -45,6 +44,10 @@ Meteor.methods({
         let time = (session.end - session.start) / 1000;
         time = Math.floor(time);
 
+        if(sesson.categoryName){
+            Meteorl.call('users.api.increaseTimeToCategory', userId, session.categoryName, time);
+        }
+
         Meteor.call('users.api.increaseOverall', userId, time);
     },
 
@@ -59,6 +62,16 @@ Meteor.methods({
 
         let categoryTree = user.categoryTree;
         categoryTree.addCategory(category);
+
+        Users.update({ _id: userId }, { $set: { categoryTree: categoryTree } });
+    },
+
+    'users.api.increaseTimeToCategory'(userId, categoryName, time){
+        let user = Users.findOne({ _id: userId });
+
+        let categoryTree = new CategoryTree(user.categoryTree);
+
+        categoryTree.increaseTimeToCategory(categoryTree, time);
 
         Users.update({ _id: userId }, { $set: { categoryTree: categoryTree } });
     }

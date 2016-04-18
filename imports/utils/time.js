@@ -22,6 +22,10 @@ export function objectTime(ms){
 	};
 }
 
+export function objectTimeS(s){
+	return objectTime(s * second);
+}
+
 function normalize(t){
 	t = f(t) % 60;
 

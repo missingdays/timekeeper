@@ -12,7 +12,7 @@ export default class CategoryTree {
 
 	addCategory(category){
 		if(!category.parent){
-			this.rootcat.addChild(new Category(category.name));
+			this.rootcat.addChild(new Category(category.name, this.rootcat));
 		} else {
 			let parent = this.findCategory(category.parent);
 
@@ -20,7 +20,7 @@ export default class CategoryTree {
 				throwNoParentCategory(category.parent);
 			}
 
-			parent.addChild(category);
+			parent.addChild(new Category(category.name, parent));
 		}
 	}
 
@@ -45,20 +45,31 @@ export default class CategoryTree {
 		return null;
 	}
 
+	increaseTimeToCategory(categoryName, time){
+		let category = this.findCategory(categoryName);
+		category.increaseTime(time);
+	}
+
+	getRoot(){
+		return this.rootcat;
+	}
+
 	_initFromPlainObject(obj){
 		this.rootcat = new Category(obj.rootcat.name);
 
 		for(let key in obj.rootcat.subcats){
-			this.rootcat.addChildFromPlainObject(obj.rootcat.subcats[key]);
+			this.rootcat.addChildFromPlainObject(obj.rootcat.subcats[key], this.rootcat);
 		}
 	}
 
 }
 
 class Category {
-	constructor(name){
+	constructor(name, parent){
 		this.name = name;
 		this.subcats = {};
+		this.time = 0;
+		this.parent = parent;
 	}
 
 	hasChild(childName){
@@ -73,15 +84,27 @@ class Category {
 		this.subcats[child.name] = child;
 	}
 
-	addChildFromPlainObject(obj){
+	addChildFromPlainObject(obj, parent){
 		if(this.subcats[obj.name]){
 			throwCatExists(obj.name);
 		}
 
-		let child = this.subcats[obj.name] = new Category(obj.name);
+		let child = this.subcats[obj.name] = new Category(obj.name, parent);
 
 		for(let key in obj.subcats){
-			child.addChildFromPlainObject(obj.subcats[key]);
+			child.addChildFromPlainObject(obj.subcats[key], child);
 		}
+	}
+
+	increaseTime(t){
+		this.time += t;
+
+		if(this.parent !== undefined){
+			this.parent.increaseTime(t);
+		}
+	}
+
+	getTime(){
+		return this.time;
 	}
 }
