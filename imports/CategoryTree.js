@@ -78,7 +78,9 @@ export default class CategoryTree {
 class Category {
 	constructor(name, parent, time){
 		this.name = name;
+
 		this.subcats = {};
+
 		this.time = time || 0;
 		this.parent = parent;
 	}
@@ -135,5 +137,15 @@ class Category {
 			time: this.time,
 			subcats: subcats
 		}
+	}
+
+	subcatsAsArray(){
+		let s = [];
+
+		for(let name in this.subcats){
+			s.push(this.subcats[name]);
+		}
+
+		return s;
 	}
 }

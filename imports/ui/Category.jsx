@@ -25,9 +25,10 @@ export default class Category extends Component {
 
 		let category = categoryTree.findCategory(name);
 		let time = objectTimeS(category.getTime());
+		let subcats = category.subcatsAsArray();
 
 		return (
-			<ul>
+			<ul className="category">
 				<li className="list-group-item">
 					<span className="badge">{
 						`${time.days} days, ${time.hours} hours, ${time.minutes} minutes, ${time.seconds} seconds`
@@ -39,6 +40,11 @@ export default class Category extends Component {
 
 					<ChildAdder parent={this} />
 
+					{
+						subcats.map(subcat => {
+							return <Category name={subcat.name} parent={this} key={subcat.name} />
+						})
+					}
 				</li>
 			</ul>
 		);

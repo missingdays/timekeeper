@@ -19,7 +19,7 @@ export default class Timer extends Component {
 		let sessionStarted = this.state.sessionStarted;
 
 		return (
-			<span>
+			<span className="timer">
 	    		<button type="button" className="btn btn-success btn-md" onClick={this.startSession.bind(this)}>
 					<span className="glyphicon glyphicon-play" aria-hidden="true"></span>
 				</button>
