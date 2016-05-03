@@ -50,13 +50,24 @@ export default class Category extends Component {
 		);
 	}
 
-	updateCategoryTree(){
+	updateCategoryTree(callback){
+		
 		if(this.props.parent){
-			this.setState({ categoryTree: this.props.parent.state.categoryTree});
+			this.props.parent.updateCategoryTree(categoryTree =>{
+				this.setState({ categoryTree: categoryTree });
+
+				if(callback){
+					callback(categoryTree);					
+				}
+
+			});
 		} else {
 			Meteor.call('users.getInfo', (err, info) => {
-				console.log(info);
 				this.setState({ categoryTree: new CategoryTree(info.categoryTree) });
+
+				if(callback){
+					callback(this.state.categoryTree);
+				}
 			});
 		}
 	}

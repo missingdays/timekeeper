@@ -37,6 +37,7 @@ export default class Timer extends Component {
 
 	tick(){
 		let startTime = this.state.sessionStartTime;
+		
 		this.setState({
 			sessionTime: new Date() - startTime,
 		});
@@ -45,13 +46,13 @@ export default class Timer extends Component {
     startSession(){
 
 		if(!this.state.sessionStarted){
-    		this.timer = setInterval(this.tick.bind(this), 500);
+    		this.timer = setInterval(this.tick.bind(this), Timer.updateInterval);
 
     		this.setState({
     			sessionStarted: true,
     			sessionStartTime: Date.now(),
     			sessionTime: 0
-    		})
+    		});
     	}
     }
 
@@ -64,17 +65,26 @@ export default class Timer extends Component {
     			sessionStarted: false
     		});
 
-    		let categoryName;
-
-    		if(this.props.category){
-    			categoryName = this.props.category.props.name;
-    		}
-
-    		Meteor.call('users.addSession', {
-    			start: this.state.sessionStartTime,
-    			end: Date.now(),
-    			categoryName: categoryName
-    		});
+    		this.updateSessionInfo();
     	}
     }
+
+    updateSessionInfo(){
+    	let categoryName;
+
+		if(this.props.category){
+			categoryName = this.props.category.props.name;
+		}
+
+		Meteor.call('users.addSession', {
+			start: this.state.sessionStartTime,
+			end: Date.now(),
+			categoryName: categoryName
+		});
+
+		this.props.category.updateCategoryTree();	
+    }
+
 }
+
+Timer.updateInterval = 500;
