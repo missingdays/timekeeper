@@ -19,19 +19,19 @@ export default class Timer extends Component {
 		let sessionStarted = this.state.sessionStarted;
 
 		return (
-			<div>
-	    		<button type="button" className="btn btn-success btn-lg" onClick={this.startSession.bind(this)}>
+			<span>
+	    		<button type="button" className="btn btn-success btn-md" onClick={this.startSession.bind(this)}>
 					<span className="glyphicon glyphicon-play" aria-hidden="true"></span>
 				</button>
 
-				<button type="button" className="btn btn-default btn-lg" onClick={this.endSession.bind(this)}>
+				<button type="button" className="btn btn-default btn-md" onClick={this.endSession.bind(this)}>
 					<span className="glyphicon glyphicon-stop" aria-hidden="true"></span>
 				</button>
 
 				<b>
 					{ sessionStarted ? formatTime(time) : "" }
 				</b>
-			</div>
+			</span>
 		);
 	}
 
@@ -64,10 +64,17 @@ export default class Timer extends Component {
     			sessionStarted: false
     		});
 
+    		let categoryName;
+
+    		if(this.props.category){
+    			categoryName = this.props.category.props.name;
+    		}
+
     		Meteor.call('users.addSession', {
     			start: this.state.sessionStartTime,
-    			end: Date.now()
-    		})
+    			end: Date.now(),
+    			categoryName: categoryName
+    		});
     	}
     }
 }

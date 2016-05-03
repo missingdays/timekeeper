@@ -17,12 +17,6 @@ export default class Main extends Component {
 
 	            <div className="row">
 	            	<div className="col-md-12">
-	            		<Timer />	
-	            	</div>
-	            </div>
-
-	            <div className="row">
-	            	<div className="col-md-12">
 	            		<Category name='root'/>
 	            	</div>
 	            </div>

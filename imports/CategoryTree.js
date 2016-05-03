@@ -47,7 +47,18 @@ export default class CategoryTree {
 
 	increaseTimeToCategory(categoryName, time){
 		let category = this.findCategory(categoryName);
+
+		if(category === null){
+			throw new Error(`Cant increase time to category ${categoryName}: no such category`);
+		}
+		
 		category.increaseTime(time);
+	}
+
+	toNonRecursiveObject(){
+		return {
+			rootcat: this.rootcat.toNonRecursiveObject()
+		};
 	}
 
 	getRoot(){
@@ -55,7 +66,7 @@ export default class CategoryTree {
 	}
 
 	_initFromPlainObject(obj){
-		this.rootcat = new Category(obj.rootcat.name);
+		this.rootcat = new Category(obj.rootcat.name, null, obj.rootcat.time);
 
 		for(let key in obj.rootcat.subcats){
 			this.rootcat.addChildFromPlainObject(obj.rootcat.subcats[key], this.rootcat);
@@ -65,10 +76,10 @@ export default class CategoryTree {
 }
 
 class Category {
-	constructor(name, parent){
+	constructor(name, parent, time){
 		this.name = name;
 		this.subcats = {};
-		this.time = 0;
+		this.time = time || 0;
 		this.parent = parent;
 	}
 
@@ -89,22 +100,40 @@ class Category {
 			throwCatExists(obj.name);
 		}
 
-		let child = this.subcats[obj.name] = new Category(obj.name, parent);
+		let child = this.subcats[obj.name] = new Category(obj.name, parent, obj.time);
 
-		for(let key in obj.subcats){
-			child.addChildFromPlainObject(obj.subcats[key], child);
+		if(obj.subcats !== undefined){
+			for(let key in obj.subcats){
+				child.addChildFromPlainObject(obj.subcats[key], child);
+			}
 		}
 	}
 
 	increaseTime(t){
 		this.time += t;
 
-		if(this.parent !== undefined){
+		if(this.parent){
 			this.parent.increaseTime(t);
 		}
 	}
 
 	getTime(){
 		return this.time;
+	}
+
+	toNonRecursiveObject(){
+
+		let subcats = {};
+
+		for(let key in this.subcats){
+			let subcat = this.subcats[key];
+			subcats[subcat.name] = subcat.toNonRecursiveObject();
+		}
+
+		return {
+			name: this.name,
+			time: this.time,
+			subcats: subcats
+		}
 	}
 }

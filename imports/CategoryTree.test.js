@@ -20,6 +20,15 @@ if(Meteor.isServer){
 				assert.equal(categoryTree.rootcat.subcats['test'].name, 'test');
 			});
 
+			it('should add category if parent is specified as root', ()=>{
+				categoryTree.addCategory({
+					name: 'test',
+					parent: 'root'
+				});
+
+				assert.equal(categoryTree.rootcat.subcats['test'].name, 'test');				
+			});
+
 			it('should add category with parent', ()=>{
 				categoryTree.addCategory({
 					name: 'parent'
@@ -145,6 +154,37 @@ if(Meteor.isServer){
 
 				assert.equal(categoryTree.findCategory('parent').name, 'parent');
 				assert.equal(categoryTree.findCategory('child').name, 'child');
+
+				assert.equal(categoryTree.findCategory('child').parent.name, 'parent');
+			});
+		});
+
+		describe('#toNonRecursiveObject', ()=>{
+			it('should transform with just rootcat', ()=>{
+				let obj = categoryTree.toNonRecursiveObject();
+
+				assert.deepEqual(obj, {
+					rootcat: {
+						name: 'root',
+						time: 0,
+						subcats: {}
+					}
+				});
+			});
+
+			it('should transform when has subcats', ()=>{
+				categoryTree = new CategoryTree({
+					rootcat: {
+						name: 'root',
+						subcats: {
+							subcat: {
+								name: 'subcat'
+							}
+						}
+					}
+				});
+
+				let obj = categoryTree.toNonRecursiveObject();
 			});
 		});
 	});

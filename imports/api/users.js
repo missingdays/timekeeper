@@ -44,8 +44,8 @@ Meteor.methods({
         let time = (session.end - session.start) / 1000;
         time = Math.floor(time);
 
-        if(sesson.categoryName){
-            Meteorl.call('users.api.increaseTimeToCategory', userId, session.categoryName, time);
+        if(session.categoryName !== undefined){
+            Meteor.call('users.api.increaseTimeToCategory', userId, session.categoryName, time);
         }
 
         Meteor.call('users.api.increaseOverall', userId, time);
@@ -60,10 +60,12 @@ Meteor.methods({
     'users.api.addCategory'(userId, category){
         let user = Users.findOne({ _id: userId });
 
-        let categoryTree = user.categoryTree;
+        let categoryTree = new CategoryTree(user.categoryTree);
         categoryTree.addCategory(category);
 
-        Users.update({ _id: userId }, { $set: { categoryTree: categoryTree } });
+        Users.update({ _id: userId }, { $set: {
+            categoryTree: categoryTree.toNonRecursiveObject()
+        } });
     },
 
     'users.api.increaseTimeToCategory'(userId, categoryName, time){
@@ -71,9 +73,11 @@ Meteor.methods({
 
         let categoryTree = new CategoryTree(user.categoryTree);
 
-        categoryTree.increaseTimeToCategory(categoryTree, time);
+        categoryTree.increaseTimeToCategory(categoryName, time);
 
-        Users.update({ _id: userId }, { $set: { categoryTree: categoryTree } });
+        Users.update({ _id: userId }, { $set: { 
+            categoryTree: categoryTree.toNonRecursiveObject()
+        } });
     }
 });
 
@@ -108,6 +112,12 @@ Meteor.methods({
         let time = Meteor.call('users.api.getOverallTime', userId);
 
         return time;
+    },
+
+    'users.addCategory'(category){
+        let userId = this.userId;
+
+        Meteor.call('users.api.addCategory', userId, category);
     }
 });
 
