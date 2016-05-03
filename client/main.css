@@ -1,6 +1,22 @@
 
-.category *{
+button:focus {
+	outline: 0 !important;
+}
+
+.category {
 	margin: 3px 7px;
+}
+
+.category .childAdder {
+	margin: 2px 5px;
+}
+
+.category .childInput {
+	margin: 2px 3px;
+}
+
+.category .badge {
+	font-size: 14px;
 }
 
 .timer *{

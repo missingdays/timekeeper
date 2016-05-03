@@ -30,11 +30,15 @@ export default class Category extends Component {
 		return (
 			<ul className="category">
 				<li className="list-group-item">
-					<span className="badge">{
-						`${time.days} days, ${time.hours} hours, ${time.minutes} minutes, ${time.seconds} seconds`
-					}</span>
+					<span className="badge">
+						{
+							`${time.days} days, ${time.hours} hours, ${time.minutes} minutes, ${time.seconds} seconds`
+						}
+					</span>
 					
-					{ name === 'root' ? 'Overall time' : name }
+					<h4>
+						{ name === 'root' ? 'Overall time' : name }
+					</h4>
 
 					<Timer category={this} />
 
@@ -95,12 +99,12 @@ class ChildAdder extends Component {
 
 	render(){
 		return (
-			<span>
-				<button onClick={this.btnClicked.bind(this)}>
+			<span className="childAdder">
+				<ChildInput parent={this}/>
+
+				<button className="btn btn-default" onClick={this.btnClicked.bind(this)}>
 					<span className="glyphicon glyphicon-plus" aria-hidden="true"></span>
 				</button>
-
-				<ChildInput parent={this}/>
 			</span>
 		);
 	}
@@ -130,7 +134,7 @@ class ChildInput extends Component {
 
 	render(){
 		return (
-			<input type="text" value={this.state.value} onChange={this.handleChange.bind(this)} />
+			<input className="childInput" type="text" value={this.state.value} onChange={this.handleChange.bind(this)} />
 		);
 	}
 

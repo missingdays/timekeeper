@@ -22,7 +22,7 @@ export default class Timer extends Component {
 			<span className="timer">
 
 				{ sessionStarted ? 
-					<button type="button" className="btn btn-default btn-md" onClick={this.endSession.bind(this)}>
+					<button type="button" className="btn btn-danger btn-md" onClick={this.endSession.bind(this)}>
 						<span className="glyphicon glyphicon-stop" aria-hidden="true"></span>
 					</button>
 				:
