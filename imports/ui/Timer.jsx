@@ -20,13 +20,16 @@ export default class Timer extends Component {
 
 		return (
 			<span className="timer">
-	    		<button type="button" className="btn btn-success btn-md" onClick={this.startSession.bind(this)}>
-					<span className="glyphicon glyphicon-play" aria-hidden="true"></span>
-				</button>
 
-				<button type="button" className="btn btn-default btn-md" onClick={this.endSession.bind(this)}>
-					<span className="glyphicon glyphicon-stop" aria-hidden="true"></span>
-				</button>
+				{ sessionStarted ? 
+					<button type="button" className="btn btn-default btn-md" onClick={this.endSession.bind(this)}>
+						<span className="glyphicon glyphicon-stop" aria-hidden="true"></span>
+					</button>
+				:
+	    			<button type="button" className="btn btn-success btn-md" onClick={this.startSession.bind(this)}>
+						<span className="glyphicon glyphicon-play" aria-hidden="true"></span>
+					</button>
+				}
 
 				<b>
 					{ sessionStarted ? formatTime(time) : "" }
