@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 
 import Timer from './Timer.jsx';
 
-import CategoryTree from '../CategoryTree.js';
-import { objectTimeS } from '../utils/time.js';
+import CategoryTree from '../../CategoryTree.js';
+import { objectTimeS } from '../../utils/time.js';
 
 export default class Category extends Component {
 

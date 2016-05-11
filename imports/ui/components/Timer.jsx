@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react';
 
-import { formatTime } from '../utils/time.js';
+import { formatTime } from '../../utils/time.js';
 
 export default class Timer extends Component {
 	constructor(props){
