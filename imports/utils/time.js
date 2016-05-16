@@ -12,7 +12,18 @@ export function formatTime(ms){
 	return `${h}:${m}:${s}`;
 }
 
-export function objectTime(ms){
+export function objectTime(options){
+
+	let ms = 0;
+
+	if(options.ms){
+		ms = options.ms;
+	}
+
+	if(options.seconds){
+		ms = options.seconds * second;
+	}
+
 	return {
 		ms: ms,
 		seconds: normalize(ms / second),
@@ -20,10 +31,6 @@ export function objectTime(ms){
 		hours: normalize(ms / hour), 
 		days: f(ms / day)
 	};
-}
-
-export function objectTimeS(s){
-	return objectTime(s * second);
 }
 
 function normalize(t){
