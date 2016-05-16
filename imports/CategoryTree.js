@@ -2,9 +2,10 @@
 import { throwCatExists, throwNoParentCategory } from './utils/errors.js';
 
 export default class CategoryTree {
+
 	constructor(obj){
 		if(obj === undefined){
-			this.rootcat = new Category('root');
+			this.rootcat = new Category(CategoryTree.rootCategory);
 		} else {
 			this._initFromPlainObject(obj);
 		}
@@ -34,8 +35,8 @@ export default class CategoryTree {
 			return at;
 		}
 
-		for(let key in at.subcats){
-			let category = this.findCategory(categoryName, at.subcats[key]);
+		for(let key in at.children){
+			let category = this.findCategory(categoryName, at.children[key]);
 
 			if(category !== null){
 				return category;
@@ -68,45 +69,55 @@ export default class CategoryTree {
 	_initFromPlainObject(obj){
 		this.rootcat = new Category(obj.rootcat.name, null, obj.rootcat.time);
 
-		for(let key in obj.rootcat.subcats){
-			this.rootcat.addChildFromPlainObject(obj.rootcat.subcats[key], this.rootcat);
+		for(let key in obj.rootcat.children){
+			this.rootcat.addChildFromPlainObject(obj.rootcat.children[key], this.rootcat);
 		}
 	}
 
 }
 
+CategoryTree.rootCategory = 'root';
+
 class Category {
 	constructor(name, parent, time){
 		this.name = name;
 
-		this.subcats = {};
+		this.children = {};
 
 		this.time = time || 0;
 		this.parent = parent;
 	}
 
 	hasChild(childName){
-		return this.subcats[childName] !== undefined;
+		return this.children[childName] !== undefined;
 	}
 
 	addChild(child){
-		if(this.subcats[child.name]){
+		if(this.children[child.name]){
 			throwCatExists(child.name);
 		}
 
-		this.subcats[child.name] = child;
+		this.children[child.name] = child;
+	}
+
+	remove(){
+		this.parent.removeChild(this.name);
+	}
+
+	removeChild(childName){
+		delete this.children[childName];
 	}
 
 	addChildFromPlainObject(obj, parent){
-		if(this.subcats[obj.name]){
+		if(this.children[obj.name]){
 			throwCatExists(obj.name);
 		}
 
-		let child = this.subcats[obj.name] = new Category(obj.name, parent, obj.time);
+		let child = this.children[obj.name] = new Category(obj.name, parent, obj.time);
 
-		if(obj.subcats !== undefined){
-			for(let key in obj.subcats){
-				child.addChildFromPlainObject(obj.subcats[key], child);
+		if(obj.children !== undefined){
+			for(let key in obj.children){
+				child.addChildFromPlainObject(obj.children[key], child);
 			}
 		}
 	}
@@ -125,25 +136,25 @@ class Category {
 
 	toNonRecursiveObject(){
 
-		let subcats = {};
+		let children = {};
 
-		for(let key in this.subcats){
-			let subcat = this.subcats[key];
-			subcats[subcat.name] = subcat.toNonRecursiveObject();
+		for(let key in this.children){
+			let subcat = this.children[key];
+			children[subcat.name] = subcat.toNonRecursiveObject();
 		}
 
 		return {
 			name: this.name,
 			time: this.time,
-			subcats: subcats
+			children: children
 		}
 	}
 
-	subcatsAsArray(){
+	childrenAsArray(){
 		let s = [];
 
-		for(let name in this.subcats){
-			s.push(this.subcats[name]);
+		for(let name in this.children){
+			s.push(this.children[name]);
 		}
 
 		return s;

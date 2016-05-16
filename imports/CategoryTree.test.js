@@ -17,7 +17,7 @@ if(Meteor.isServer){
 					name: 'test'
 				});
 
-				assert.equal(categoryTree.rootcat.subcats['test'].name, 'test');
+				assert.equal(categoryTree.rootcat.children['test'].name, 'test');
 			});
 
 			it('should add category if parent is specified as root', ()=>{
@@ -26,7 +26,7 @@ if(Meteor.isServer){
 					parent: 'root'
 				});
 
-				assert.equal(categoryTree.rootcat.subcats['test'].name, 'test');				
+				assert.equal(categoryTree.rootcat.children['test'].name, 'test');				
 			});
 
 			it('should add category with parent', ()=>{
@@ -39,7 +39,7 @@ if(Meteor.isServer){
 					parent: 'parent'
 				});
 
-				assert.equal(categoryTree.rootcat.subcats['parent'].subcats['child'].name, 'child');
+				assert.equal(categoryTree.rootcat.children['parent'].children['child'].name, 'child');
 			});
 
 			it('should throw if category exists', ()=>{
@@ -126,25 +126,25 @@ if(Meteor.isServer){
 				categoryTree = new CategoryTree({
 					rootcat: {
 						name: 'root',
-						subcats: {}
+					children: {}
 					}
 				});
 
 				assert.equal(categoryTree.rootcat.name, 'root');
-				assert.deepEqual(categoryTree.rootcat.subcats, {});
+				assert.deepEqual(categoryTree.rootcat.children, {});
 			});
 
 			it('should init from object with cats', ()=>{
 				categoryTree = new CategoryTree({
 					rootcat: {
 						name: 'root',
-						subcats: {
+					children: {
 							parent: {
 								name: 'parent',
-								subcats: {
+							children: {
 									child: {
 										name: 'child',
-										subcats: {}
+									children: {}
 									}
 								}
 							}
@@ -167,16 +167,16 @@ if(Meteor.isServer){
 					rootcat: {
 						name: 'root',
 						time: 0,
-						subcats: {}
+					children: {}
 					}
 				});
 			});
 
-			it('should transform when has subcats', ()=>{
+			it('should transform when has.children', ()=>{
 				categoryTree = new CategoryTree({
 					rootcat: {
 						name: 'root',
-						subcats: {
+					children: {
 							subcat: {
 								name: 'subcat'
 							}
