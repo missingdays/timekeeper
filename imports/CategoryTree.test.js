@@ -83,6 +83,46 @@ if(Meteor.isServer){
 			})
 		});
 
+		describe('#removeCategory', ()=>{
+			it('should remove category', ()=>{
+				categoryTree.addCategory({
+					name: 'test'
+				});
+
+				categoryTree.removeCategory('test');
+
+				assert.isNull(categoryTree.findCategory('test'));
+			});
+
+			it('should remove all children of category', ()=>{
+				categoryTree.addCategory({
+					name: 'parent'
+				});
+
+				categoryTree.addCategory({
+					parent: 'parent',
+					name: 'child1'
+				});
+
+				categoryTree.addCategory({
+					parent: 'parent',
+					name: 'child2'
+				});
+
+				categoryTree.removeCategory('parent');
+
+				assert.isNull(categoryTree.findCategory('parent'));
+				assert.isNull(categoryTree.findCategory('child1'));
+				assert.isNull(categoryTree.findCategory('child1'));
+			});
+
+			it('should throw error when deleting root', ()=>{
+				assert.throws(()=>{
+					categoryTree.removeCategory(CategoryTree.rootCategory);
+				})
+			});
+		});
+
 		describe('#increaseTime', ()=>{
 			it('should increase time', ()=>{
 				categoryTree.addCategory({

@@ -46,6 +46,16 @@ export default class CategoryTree {
 		return null;
 	}
 
+	removeCategory(categoryName){
+		if(categoryName === CategoryTree.rootCategory){
+			throw new Error("Can't remove root category");
+		}
+
+		let category = this.findCategory(categoryName);
+
+		category.remove();
+	}
+
 	increaseTimeToCategory(categoryName, time){
 		let category = this.findCategory(categoryName);
 
@@ -104,7 +114,14 @@ class Category {
 		this.parent.removeChild(this.name);
 	}
 
+	removeAllChildren(){
+		for(let name in this.children){
+			this.removeChild(name);
+		}
+	}
+
 	removeChild(childName){
+		this.children[childName].removeAllChildren();
 		delete this.children[childName];
 	}
 
